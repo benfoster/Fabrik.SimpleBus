@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -13,18 +12,15 @@ namespace Fabrik.SimpleBus
     {
         private readonly ConcurrentQueue<Subscription> subscriptionRequests = new ConcurrentQueue<Subscription>();
         private readonly ConcurrentQueue<Guid> unsubscribeRequests = new ConcurrentQueue<Guid>();
-        private readonly ActionBlock<Tuple<object, Action>> messageProcessor;
+        private readonly ActionBlock<SendMessageRequest> messageProcessor;
 
         public InProcessBus()
         {
             // Only ever accessed from (single threaded) ActionBlock, so it is thread safe
             var subscriptions = new List<Subscription>();
 
-            messageProcessor = new ActionBlock<Tuple<object, Action>>(async tuple =>
+            messageProcessor = new ActionBlock<SendMessageRequest>(async request =>
             {
-                var message = tuple.Item1;
-                var completionAction = tuple.Item2;
-
                 // Process unsubscribe requests
                 Guid subscriptionId;
                 while (unsubscribeRequests.TryDequeue(out subscriptionId))
@@ -33,16 +29,38 @@ namespace Fabrik.SimpleBus
                 }
 
                 // Process subscribe requests
-                Subscription subscription;
-                while (subscriptionRequests.TryDequeue(out subscription))
+                Subscription newSubscription;
+                while (subscriptionRequests.TryDequeue(out newSubscription))
                 {
-                    subscriptions.Add(subscription);
+                    subscriptions.Add(newSubscription);
                 }
 
-                // Execute all handlers
-                await Task.WhenAll(subscriptions.Select(s => s.Handler.Invoke(message)));
+                var result = true;
 
-                completionAction();
+                foreach (var subscription in subscriptions)
+                {
+                    try
+                    {
+                        await subscription.Handler.Invoke(request.Payload, request.CancellationToken);
+                        request.CancellationToken.ThrowIfCancellationRequested();
+                    }
+                    catch (OperationCanceledException opcex)
+                    {
+                        // Don't process any more subscriptions, the send task has been cancelled
+                        result = false;
+                        break;
+                    }
+                    catch 
+                    {
+                        // Unhandled exception by a handler. Log and continue onto the next subscriber
+                        // May need some kind of dead letter queue here
+                        result = false;
+                        continue;
+                    }
+                }
+
+                // All done send result back to caller
+                request.OnSendComplete(result);
             });
         }
                
@@ -57,22 +75,20 @@ namespace Fabrik.SimpleBus
             Ensure.Argument.NotNull(cancellationToken, "cancellationToken");
 
             var tcs = new TaskCompletionSource<bool>();
-            Action onCompleted = () => tcs.SetResult(true);
-
-            messageProcessor.Post(new Tuple<object, Action>(message, onCompleted));
+            messageProcessor.Post(new SendMessageRequest(message, cancellationToken, result => tcs.SetResult(result)));
             return tcs.Task;
         }
 
         public Guid Subscribe<TMessage>(Action<TMessage> handler)
         {
-            return Subscribe<TMessage>(message =>
+            return Subscribe<TMessage>((message, cancellationToken) =>
             {
                 handler.Invoke(message);
                 return Task.FromResult(0);
             });
         }
 
-        public Guid Subscribe<TMessage>(Func<TMessage, Task> handler)
+        public Guid Subscribe<TMessage>(Func<TMessage, CancellationToken, Task> handler)
         {
             Ensure.Argument.NotNull(handler, "handler");
             var subscription = Subscription.Create<TMessage>(handler);

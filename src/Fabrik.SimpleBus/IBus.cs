@@ -9,7 +9,7 @@ namespace Fabrik.SimpleBus
         Task SendAsync<TMessage>(TMessage message);
         Task SendAsync<TMessage>(TMessage message, CancellationToken cancellationToken);
         Guid Subscribe<TMessage>(Action<TMessage> handler);
-        Guid Subscribe<TMessage>(Func<TMessage, Task> handler);
+        Guid Subscribe<TMessage>(Func<TMessage, CancellationToken, Task> handler);
         void Unsubscribe(Guid subscriptionId);
     }
 }

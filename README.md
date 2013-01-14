@@ -36,7 +36,7 @@ Both synchronous and asynchronous delegates are supported.
 
     public class AsyncMessageHandler : IHandleAsync<Message>
     {
-        public async Task HandleAsync(Message message)
+        public async Task HandleAsync(Message message, CancellationToken cancellationToken)
         {
             await Task.Delay(1000);
             Console.WriteLine("{0} handled {1}", this.GetType().Name, typeof(Message).Name);
@@ -46,7 +46,7 @@ Both synchronous and asynchronous delegates are supported.
 **Note: Messages are matched to handlers based on whether they are or implement the required message type. 
 This makes it possible to subscribe to all messages of a specific base class or interface.**
 
-#### Subscribing message handlers:
+#### Subscribing message handlers
 
 In most cases you will want to initialize a handler *per message*, for example, you may need to construct the handler using your IoC tool.
 
@@ -72,7 +72,13 @@ Note that unsubscribing a handler will not effect any messages currently being p
 
     bus.SendAsync(input).ContinueWith(task => Console.WriteLine("Enter another message")).Wait();
 
+#### Cancelling Message Sending
 
+You can cancel the processing of a sent message by passing a `CancellationToken`. 
+	
+	bus.SendAsync(input, cancellationTokenSource.Token).Wait();
+
+When a cancellation request is received, no more message subscribers are invoked for the current message.
 
 ## License
 

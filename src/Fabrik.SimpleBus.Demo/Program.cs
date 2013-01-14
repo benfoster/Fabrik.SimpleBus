@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Fabrik.SimpleBus.Demo
@@ -29,6 +30,7 @@ namespace Fabrik.SimpleBus.Demo
             {
                 var t1 = bus.SendAsync(new Message { Body = input });
                 var t2 = bus.SendAsync(input).ContinueWith(task => Console.WriteLine("Enter another message"));
+
                 Task.WaitAll(t1, t2);
             }
         }
@@ -54,7 +56,7 @@ namespace Fabrik.SimpleBus.Demo
 
     public class AsyncMessageHandler : IHandleAsync<Message>
     {
-        public async Task HandleAsync(Message message)
+        public async Task HandleAsync(Message message, CancellationToken cancellationToken)
         {
             await Task.Delay(1000);
             Console.WriteLine("{0} handled {1}", this.GetType().Name, typeof(Message).Name);

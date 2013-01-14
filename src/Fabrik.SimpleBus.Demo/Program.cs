@@ -15,29 +15,33 @@ namespace Fabrik.SimpleBus.Demo
         {           
             var bus = new InProcessBus();
 
-            // Delegate Subscription
-            bus.Subscribe<string>(message => Console.WriteLine("Received simple message: {0}", message));
-            bus.Subscribe<string>(async message => await WriteMessageAsync(message));
+            // Delegate Handler
+            bus.Subscribe<string>(message => Console.WriteLine("Delegate Handler Received: {0}", message));
+            bus.Subscribe<string>(async (message, token) => await WriteMessageAsync(message, token));
             
-            // Handler factory
+            // Strongly typed handler
             bus.Subscribe<Message>(() => new MessageHandler());
 
-            // Async Handler Factory
-            bus.Subscribe<Message>(() => new AsyncMessageHandler());
+            // Strongly typed async handler
+            bus.Subscribe<Message>(() => new AsyncMessageHandler()); // will automatically be passed a cancellation token
 
+            Console.WriteLine("Enter a message\n");
+            
             string input;
             while ((input = Console.ReadLine()) != "q")
             {
+                var t2 = bus.SendAsync(input);
                 var t1 = bus.SendAsync(new Message { Body = input });
-                var t2 = bus.SendAsync(input).ContinueWith(task => Console.WriteLine("Enter another message"));
 
                 Task.WaitAll(t1, t2);
+
+                Console.WriteLine("\nEnter another message\n");
             }
         }
 
-        private Task WriteMessageAsync(string message)
+        private Task WriteMessageAsync(string message, CancellationToken cancellationToken)
         {
-            return Task.Delay(2000).ContinueWith(task => Console.WriteLine("Received simple message async: {0}", message));
+            return Task.Delay(2000).ContinueWith(task => Console.WriteLine("Delegate Async Handler Received: {0}", message));
         }
     }
 
@@ -50,7 +54,7 @@ namespace Fabrik.SimpleBus.Demo
     {
         public void Handle(Message message)
         {
-            Console.WriteLine("{0} handled {1}", this.GetType().Name, typeof(Message).Name);
+            Console.WriteLine("{0} Received message type: {1}", this.GetType().Name, typeof(Message).Name);
         }
     }
 
@@ -59,7 +63,7 @@ namespace Fabrik.SimpleBus.Demo
         public async Task HandleAsync(Message message, CancellationToken cancellationToken)
         {
             await Task.Delay(1000);
-            Console.WriteLine("{0} handled {1}", this.GetType().Name, typeof(Message).Name);
+            Console.WriteLine("{0} Received message type: {1}", this.GetType().Name, typeof(Message).Name);
         }
     }
 }

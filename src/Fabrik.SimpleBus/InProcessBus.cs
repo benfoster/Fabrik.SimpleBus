@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -25,6 +26,7 @@ namespace Fabrik.SimpleBus
                 Guid subscriptionId;
                 while (unsubscribeRequests.TryDequeue(out subscriptionId))
                 {
+                    Trace.TraceInformation("Removing subscription '{0}'.".FormatWith(subscriptionId));
                     subscriptions.RemoveAll(s => s.Id == subscriptionId);
                 }
 
@@ -32,28 +34,31 @@ namespace Fabrik.SimpleBus
                 Subscription newSubscription;
                 while (subscriptionRequests.TryDequeue(out newSubscription))
                 {
+                    Trace.TraceInformation("Adding subscription '{0}'.".FormatWith(newSubscription.Id));
                     subscriptions.Add(newSubscription);
                 }
 
                 var result = true;
 
+                Trace.TraceInformation("Processing message type '{0}'.".FormatWith(request.Payload.GetType().FullName));
+
                 foreach (var subscription in subscriptions)
                 {
-                    try
+                    if (request.CancellationToken.IsCancellationRequested)
                     {
-                        await subscription.Handler.Invoke(request.Payload, request.CancellationToken);
-                        request.CancellationToken.ThrowIfCancellationRequested();
-                    }
-                    catch (OperationCanceledException opcex)
-                    {
-                        // Don't process any more subscriptions, the send task has been cancelled
+                        Trace.TraceWarning("Cancellation request recieved. Processing stopped.");
                         result = false;
                         break;
                     }
-                    catch 
+                    
+                    try
                     {
-                        // Unhandled exception by a handler. Log and continue onto the next subscriber
-                        // May need some kind of dead letter queue here
+                        Trace.TraceInformation("Executing subscription '{0}' handler.".FormatWith(subscription.Id));
+                        await subscription.Handler.Invoke(request.Payload, request.CancellationToken);
+                    }
+                    catch (Exception ex)
+                    {                        
+                        Trace.TraceError("There was a problem executing subscription '{0}' handler. Exception message: {1}".FormatWith(subscription.Id, ex.Message));
                         result = false;
                         continue;
                     }

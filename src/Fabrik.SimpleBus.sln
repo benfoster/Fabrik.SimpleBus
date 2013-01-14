@@ -12,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{1E1C41
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fabrik.SimpleBus.Demo", "Fabrik.SimpleBus.Demo\Fabrik.SimpleBus.Demo.csproj", "{605550AC-0EFD-488F-BB5B-4E73E54000A3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fabrik.SimpleBus.Tests", "Fabrik.SimpleBus.Tests\Fabrik.SimpleBus.Tests.csproj", "{94779924-4502-442C-9F3F-FB6C8E121476}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +28,10 @@ Global
 		{605550AC-0EFD-488F-BB5B-4E73E54000A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{605550AC-0EFD-488F-BB5B-4E73E54000A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{605550AC-0EFD-488F-BB5B-4E73E54000A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94779924-4502-442C-9F3F-FB6C8E121476}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94779924-4502-442C-9F3F-FB6C8E121476}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94779924-4502-442C-9F3F-FB6C8E121476}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94779924-4502-442C-9F3F-FB6C8E121476}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

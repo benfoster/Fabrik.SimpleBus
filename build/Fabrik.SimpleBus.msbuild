@@ -40,7 +40,7 @@
   <Target Name="Tests" DependsOnTargets="Compile">   
     <PropertyGroup>
       <NUnitAssemblies>$(TestProjOutputs.Replace(";", " "))</NUnitAssemblies>
-      <NUnitCommand>$(SolutionDir)\src\packages\NUnit.Runners.2.6.2\tools\nunit-console.exe $(NUnitAssemblies)</NUnitCommand>
+      <NUnitCommand>$(SolutionDir)\src\packages\NUnit.Runners.2.6.2\tools\nunit-console.exe $(NUnitAssemblies) /noxml</NUnitCommand>
     </PropertyGroup>
     <Message Importance="high" Text="Running Tests with this command: $(NUnitCommand)"/>
     <Exec Command="$(NUnitCommand)" />

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!--This file represents the results of running a test suite-->
+<test-results name="D:\Data\ben\Projects\OSSProjects\Fabrik.SimpleBus\src\Fabrik.SimpleBus.Tests\bin\Debug\Fabrik.SimpleBus.Tests.dll" total="8" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2013-03-07" time="10:08:39">
+  <environment nunit-version="2.6.2.12296" clr-version="2.0.50727.6400" os-version="Microsoft Windows NT 6.2.9200.0" platform="Win32NT" cwd="D:\Data\ben\Projects\OSSProjects\Fabrik.SimpleBus\build" machine-name="ZIRCON" user="ben" user-domain="ZIRCON" />
+  <culture-info current-culture="en-GB" current-uiculture="en-GB" />
+  <test-suite type="Assembly" name="D:\Data\ben\Projects\OSSProjects\Fabrik.SimpleBus\src\Fabrik.SimpleBus.Tests\bin\Debug\Fabrik.SimpleBus.Tests.dll" executed="True" result="Success" success="True" time="2.341" asserts="0">
+    <results>
+      <test-suite type="Namespace" name="Fabrik" executed="True" result="Success" success="True" time="2.322" asserts="0">
+        <results>
+          <test-suite type="Namespace" name="SimpleBus" executed="True" result="Success" success="True" time="2.322" asserts="0">
+            <results>
+              <test-suite type="Namespace" name="Tests" executed="True" result="Success" success="True" time="2.322" asserts="0">
+                <results>
+                  <test-suite type="TestFixture" name="InProcessBusTests" executed="True" result="Success" success="True" time="2.319" asserts="0">
+                    <results>
+                      <test-case name="Fabrik.SimpleBus.Tests.InProcessBusTests.Can_send_messages_withut_any_subscribers" executed="True" result="Success" success="True" time="0.173" asserts="0" />
+                      <test-case name="Fabrik.SimpleBus.Tests.InProcessBusTests.Can_subscribe_to_complex_types" executed="True" result="Success" success="True" time="0.013" asserts="1" />
+                      <test-case name="Fabrik.SimpleBus.Tests.InProcessBusTests.Can_subscribe_to_simple_types" executed="True" result="Success" success="True" time="0.004" asserts="1" />
+                      <test-case name="Fabrik.SimpleBus.Tests.InProcessBusTests.Can_unsubscribe_an_existing_handler" executed="True" result="Success" success="True" time="0.020" asserts="2" />
+                      <test-case name="Fabrik.SimpleBus.Tests.InProcessBusTests.Cancelling_a_message_should_stop_all_remaining_handlers_from_executing" executed="True" result="Success" success="True" time="2.021" asserts="3" />
+                      <test-case name="Fabrik.SimpleBus.Tests.InProcessBusTests.Should_execute_remaining_handlers_on_exception" executed="True" result="Success" success="True" time="0.022" asserts="2" />
+                      <test-case name="Fabrik.SimpleBus.Tests.InProcessBusTests.Should_invoke_all_handlers_that_implement_the_message_type" executed="True" result="Success" success="True" time="0.020" asserts="4" />
+                      <test-case name="Fabrik.SimpleBus.Tests.InProcessBusTests.Should_invoke_message_handler_factories_per_message" executed="True" result="Success" success="True" time="0.013" asserts="1" />
+                    </results>
+                  </test-suite>
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

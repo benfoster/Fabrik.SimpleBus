@@ -32,8 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Fabrik.Common">
-      <HintPath>..\packages\Fabrik.Common.1.0.1-pre\lib\net40\Fabrik.Common.dll</HintPath>
+    <Reference Include="Fabrik.Common, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\fabrik\fabrikvnext\packages\Fabrik.Common.1.0.3-pre\lib\net40\Fabrik.Common.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
